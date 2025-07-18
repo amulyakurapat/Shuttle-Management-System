@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shuttle Booking System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .hidden-section { display: none; }
+        .card-header { background-color: #2c3e50; color: white; }
+        .nav-tabs .nav-link.active { background-color: #2c3e50; color: white; }
+        .wallet-card { background: linear-gradient(45deg, #3498db, #2980b9); color: white; }
+        .shuttle-option:hover { background-color: #f8f9fa; cursor: pointer; }
+        .brand { font-weight: 700; letter-spacing: 1px; }
+    </style>
+</head>
+<body class="bg-light">
+<!--navvvv barrr-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="mainNav" style="display:none;">
+    <div class="container">
+        <a class="navbar-brand brand" href="#">Shuttle Booking System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-2">
+                    <a class="nav-link" id="navBooking"><i class="fas fa-calendar-check"></i> Booking</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link" id="navHistory"><i class="fas fa-history"></i> History</a>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link" id="navLogout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div id="authSection" class="card shadow-lg" style="max-width: 500px; margin: 0 auto;">
+        <div class="card-header">
+            <ul class="nav nav-tabs nav-fill">
+                <li class="nav-item">
+                    <a class="nav-link active" id="registerTab" data-toggle="tab" href="#registerPane">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="loginTab" data-toggle="tab" href="#loginPane">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body tab-content p-4">
+            <!-- Regi formmm -->
+            <div class="tab-pane fade show active" id="registerPane">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" class="form-control form-control-lg" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" class="form-control form-control-lg" id="regEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <input type="password" class="form-control form-control-lg" id="regPassword" required>
+                    </div>
+                    <input type="hidden" id="role" value="STUDENT">
+                    <button type="button" id="registerBtn" class="btn btn-dark btn-block btn-lg">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </form>
+            </div>
+
+            <!-- loginn-->
+            <div class="tab-pane fade" id="loginPane">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUserId">User ID</label>
+                        <input type="number" class="form-control form-control-lg" id="loginUserId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" class="form-control form-control-lg" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" class="form-control form-control-lg" id="loginPassword" required>
+                    </div>
+                    <button type="button" id="loginBtn" class="btn btn-primary btn-block btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--wallet sectionn-->
+    <div id="walletSection" class="hidden-section mt-4">
+        <div class="card wallet-card shadow">
+            <div class="card-body text-center">
+                <h4 class="card-title"><i class="fas fa-wallet"></i> Wallet Balance</h4>
+                <h2 class="display-4">₹<span id="walletBalance">0</span></h2>
+            </div>
+        </div>
+    </div>
+
+    <!--shutlle booking sesctionn-->
+    <div id="bookingSection" class="hidden-section mt-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Booking Details</h5>
+            </div>
+            <div class="card-body">
+                <p id="loggedInUser" class="lead text-muted mb-4"></p>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="userId">User ID</label>
+                        <input type="number" class="form-control" id="userId" readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="currentLatitude">Current Latitude</label>
+                                <input type="text" class="form-control" id="currentLatitude" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="currentLongitude">Current Longitude</label>
+                                <input type="text" class="form-control" id="currentLongitude" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="destinationLatitude">Destination Latitude</label>
+                                <input type="text" class="form-control" id="destinationLatitude" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="destinationLongitude">Destination Longitude</label>
+                                <input type="text" class="form-control" id="destinationLongitude" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="getOptionsBtn" class="btn btn-primary btn-block">
+                        <i class="fas fa-search"></i> Find Shuttles
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- various options for booking a shuttles-->
+        <div class="card mt-4 shadow" id="optionsCard" style="display:none;">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shuttle-van"></i> Available Shuttles</h5>
+            </div>
+            <ul class="list-group list-group-flush" id="optionsList"></ul>
+        </div>
+
+        <!-- conform-->
+        <div class="card mt-4 shadow" id="confirmCard" style="display:none;">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-check-circle"></i> Confirm Booking</h5>
+            </div>
+            <div class="card-body text-center">
+                <button type="button" id="confirmBookingBtn" class="btn btn-light btn-lg">
+                    <i class="fas fa-check"></i> Confirm Booking
+                </button>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div class="card mt-4 shadow" id="confirmationCard" style="display:none;">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-receipt"></i> Booking Confirmation</h5>
+            </div>
+            <div class="card-body">
+                <p id="confirmationMessage" class="lead mb-0"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- history -->
+    <div id="tripHistorySection" class="hidden-section mt-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock"></i> Trip History</h5>
+            </div>
+            <div class="card-body">
+                <button type="button" id="getHistoryBtn" class="btn btn-info btn-block">
+                    <i class="fas fa-sync"></i> Refresh History
+                </button>
+                <ul class="list-group mt-4" id="historyList"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    let selectedShuttleId = null;
+    let currentUser = null;
+    $(document).ready(function() {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            currentUser = JSON.parse(storedUser);
+            setAuthenticatedUser(currentUser);
+            fetchWalletBalance();
+        }
+    });
+//the navbar fiunctionaluy
+    $("#navBooking").click(function() {
+        $(".hidden-section").hide();
+        $("#bookingSection").show();
+        $("#walletSection").show();
+    });
+    $("#navHistory").click(function() {
+        $(".hidden-section").hide();
+        $("#tripHistorySection").show();
+    });
+    $("#navLogout").click(function() {
+        localStorage.removeItem("user");
+        currentUser = null;
+        $("#userId, #loginUserId").val('');
+        $("#loggedInUser").text('');
+        $(".hidden-section").hide();
+        $("#authSection").show();
+        $("#mainNav").hide();
+    });
+
+    function setAuthenticatedUser(user) {
+        currentUser = user;
+        $("#userId").val(user.id);
+        $("#loggedInUser").text("Logged in as User ID: " + user.id + " (" + user.fullName + ")");
+         $("#authSection").hide();
+            $("#mainNav").show();
+            $("#bookingSection").show();
+        $("#walletSection").show();
+    }
+
+
+    function fetchWalletBalance() {
+        $.ajax({
+            url: '/api/user/' + currentUser.id + '/wallet',
+            type: 'GET',
+            success: function(response) {
+                $("#walletBalance").text(response.balance);
+            },
+            error: function(err) {
+                console.error("Error fetching wallet balance", err);
+            }
+        });
+    }
+
+    $("#registerBtn").click(function() {
+        let regData = {
+            fullName: $("#fullName").val(),
+            email: $("#regEmail").val(),
+            password: $("#regPassword").val(),
+            role: $("#role").val()
+        };
+        $.ajax({
+            url: '/api/auth/register',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(regData),
+            success: function(response) {
+                if (response.id) {
+                    localStorage.setItem("user", JSON.stringify(response));
+                    setAuthenticatedUser(response);
+                    fetchWalletBalance();
+                    alert("Registration successful.");
+                } else {
+                    alert("Registration failed: No user ID received.");
+                }
+            },
+            error: function(err) {
+                console.error("Registration error:", err);
+                const message = (err.responseJSON && err.responseJSON.message) ? err.responseJSON.message : err.responseText || "Error during registration.";
+                alert(message);
+            }
+        });
+    });
+
+
+    $("#loginBtn").click(function() {
+        let loginData = {
+            id: parseInt($("#loginUserId").val()),
+            email: $("#loginEmail").val(),
+            password: $("#loginPassword").val()
+        };
+        $.ajax({
+            url: '/api/auth/login',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(loginData),
+            success: function(response) {
+                if (response.id) {
+                    localStorage.setItem("user", JSON.stringify(response));
+                    setAuthenticatedUser(response);
+                    fetchWalletBalance();
+                    alert("Login successful.");
+                } else {
+                    alert("Login failed: No user ID received.");
+                }
+            },
+            error: function(err) {
+                console.error("Login error:", err);
+                const message = (err.responseJSON && err.responseJSON.message) ? err.responseJSON.message : err.responseText || "Error during login.";
+                alert(message);
+            }
+        });
+    });
+
+    $("#getOptionsBtn").click(function() {
+        const currentLatitude = $("#currentLatitude").val().trim();
+        const currentLongitude = $("#currentLongitude").val().trim();
+        const destinationLatitude = $("#destinationLatitude").val().trim();
+        const destinationLongitude = $("#destinationLongitude").val().trim();
+
+        if (!currentLatitude || !currentLongitude || !destinationLatitude || !destinationLongitude) {
+            alert("Please fill in all latitude and longitude fields.");
+            return;
+        }
+
+        const bookingData = {
+            userId: parseInt($("#userId").val()),
+            currentLatitude: parseFloat(currentLatitude),
+            currentLongitude: parseFloat(currentLongitude),
+            destinationLatitude: parseFloat(destinationLatitude),
+            destinationLongitude: parseFloat(destinationLongitude)
+        };
+
+        $.ajax({
+            url: '/api/booking/options',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(bookingData),
+            success: function(response) {
+                $("#optionsList").empty();
+                if (response && response.length > 0) {
+                    $("#optionsCard").show();
+                    $.each(response, function(index, option) {
+                        let li = $('<li class="list-group-item"></li>');
+                        li.text("Shuttle " + option.shuttleVehicleNumber + " - Cost: " + option.cost + " | ETA: " + option.estimatedTravelTime + " mins");
+                        li.attr("data-shuttle-id", option.shuttleId);
+                        li.css("cursor", "pointer");
+                        li.click(function() {
+                            $("#optionsList li").removeClass("active");
+                            $(this).addClass("active");
+                            selectedShuttleId = $(this).data("shuttle-id");
+                            $("#confirmCard").show();
+                        });
+                        $("#optionsList").append(li);
+                    });
+                } else {
+                    $("#optionsCard").hide();
+                    alert("No shuttle options available");
+                }
+            },
+            error: function(err) {
+                console.error("Error fetching options:", err);
+                alert("Error fetching shuttle options");
+            }
+        });
+    });
+
+    // Confirm Booking
+    $("#confirmBookingBtn").click(function() {
+        if (!selectedShuttleId) {
+            alert("Please select a shuttle option.");
+            return;
+        }
+        const bookingData = {
+            userId: parseInt($("#userId").val()),
+            currentLatitude: parseFloat($("#currentLatitude").val()),
+            currentLongitude: parseFloat($("#currentLongitude").val()),
+            destinationLatitude: parseFloat($("#destinationLatitude").val()),
+            destinationLongitude: parseFloat($("#destinationLongitude").val()),
+            selectedShuttleId: selectedShuttleId
+        };
+
+        $.ajax({
+            url: '/api/booking/confirm',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(bookingData),
+            success: function(response) {
+                let msg = "Booking ID: " + response.bookingId + "<br>Status: " + response.status + "<br>Cost: " + response.cost;
+                $("#confirmationMessage").html(msg);
+                $("#confirmationCard").show();
+                fetchWalletBalance();
+            },
+            error: function(err) {
+                console.error("Error confirming booking:", err);
+                alert("Error confirming booking");
+            }
+        });
+    });
+
+
+    $("#getHistoryBtn").click(function() {
+        const userId = $("#userId").val();
+        if (!userId) {
+            alert("User ID is missing.");
+            return;
+        }
+        $.ajax({
+            url: '/api/booking/history?userId=' + userId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $("#historyList").empty();
+                if (response.tripHistory && response.tripHistory.length > 0) {
+                    $.each(response.tripHistory, function(index, trip) {
+                        let li = $('<li class="list-group-item"></li>');
+                        li.text(trip.startStopName + " to " + trip.endStopName + " on " + trip.travelDate + " - Fare: " + trip.fare);
+                        $("#historyList").append(li);
+                    });
+                } else {
+                    alert("No trip history found.");
+                }
+            },
+            error: function(err) {
+                console.error("Error fetching history:", err);
+                alert("Error fetching trip history");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
